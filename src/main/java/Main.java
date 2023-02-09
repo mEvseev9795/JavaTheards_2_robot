@@ -12,11 +12,11 @@ public class Main {
 
         for (int i = 0; i < THREAD_COUNT; i++) {
             new Thread(() -> {
-                synchronized (sizeToFreq) {
-                    int count = (int) generateRoute(LETTERS, LENGTH).chars()
-                            .filter(ch -> ch == R)
-                            .count();
-
+                synchronized (sizeToFreq) {  //стр. 15-25. Неправильно в этот блок затаскивать и логику подсчета букв,
+                    int count = (int) generateRoute(LETTERS, LENGTH).chars() //стр. 16-18. так как получается что нет выиграша от многопоточности, 
+                            .filter(ch -> ch == R) //так как всю нужную логику может выполнять только один поток за раз,
+                            .count(); //все остальные будут ждать, когда монитор у sizeToFreq освободится.
+//В блок synchronized надо заносить только то, что критично к работе в многопоточном режиме, то есть к тому, что может сломаться, если с этим работают многие потоки одновременно(разделяемые объекты)
                     if (sizeToFreq.containsKey(count)) {
                         sizeToFreq.put(count, sizeToFreq.get(count) + 1);
                     } else {
